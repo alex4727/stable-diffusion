@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Stable-Diffusion T2I Inference",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts/txt2img.py",
+            "args": ["--prompt", "3 Baseballs",
+            "--plms",
+            "--n_samples", "1",
+            "--n_iter", "1", 
+            "--seed", "1234",
+            ],
+
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stable-Diffusion I2I Inference",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts/img2img.py",
+            "args": ["--prompt", " ",
+            "--init-img",
+            "/root/data/data/CIFAR10_PNG/train/bird/5000.png",
+            "--n_samples", "1",
+            "--n_iter", "1",
+            "--seed", "334234",
+            ],
+
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+
+    ]
+}

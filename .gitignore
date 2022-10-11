@@ -1,0 +1,5 @@
+outputs/
+*.pyc
+models/ldm/stable-diffusion-v1/model.ckpt
+*.png
+latent_diffusion.egg-info
