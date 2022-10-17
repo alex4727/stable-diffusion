@@ -9,13 +9,14 @@
             "type": "python",
             "request": "launch",
             "program": "scripts/txt2img.py",
-            "args": ["--prompt", "3 Baseballs",
+            "env": {"CUDA_VISIBLE_DEVICES":"3"},
+            "args": ["--prompt", "magpie",
             "--plms",
-            "--n_samples", "1",
-            "--n_iter", "1", 
+            "--n_samples", "3",
+            "--n_iter", "2", 
             "--seed", "1234",
+            // "--precision", "full"
             ],
-
             "console": "integratedTerminal",
             "justMyCode": true
         },
