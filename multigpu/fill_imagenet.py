@@ -225,6 +225,10 @@ def save_imagenet(all_gpu_samples, cls_idx, output_path):
         img.save(os.path.join(output_path, f"fake_{cls_idx}_{count:04}.png"))
         count += 1
 
+def save_imagenet_chunk(all_gpu_samples, cls_idx, output_path):
+    all_gpu_samples = 255. * rearrange(all_gpu_samples.cpu().numpy(), 'b c h w -> b h w c')
+    np.save(os.path.join(output_path, f"fake_{cls_idx}.npy"), all_gpu_samples)
+
 def prepare_imagenet_stats(opt):
     print("Preparing imagenet stats")
     imagenet_stats = dict()
@@ -396,7 +400,7 @@ def fill(rank, opt):
             all_gpu_samples = torch.cat(all_gpu_samples, dim=0)
             all_gpu_samples = all_gpu_samples[:-n_drop]
             generated_images_counter += all_gpu_samples.shape[0]
-            save_imagenet(all_gpu_samples, cls_idx, os.path.join(f"{opt.imagenet_out_path}", "train", f"{cls_dict['id']}"))
+            save_imagenet_chunk(all_gpu_samples, cls_idx, os.path.join(f"{opt.imagenet_out_path}", "train", f"{cls_dict['id']}"))
         
         dist.barrier()
 
