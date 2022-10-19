@@ -5,15 +5,32 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Stable-Diffusion T2I Fill ImageNet",
+            "type": "python",
+            "request": "launch",
+            "program": "multigpu/fill_imagenet.py",
+            "env": {"CUDA_VISIBLE_DEVICES":"0, 1",},
+            "args": [
+            "--plms",
+            "--n_samples", "4",
+            "--seed", "1234",
+            "--DDP",
+            "--gpus", "2",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
             "name": "Stable-Diffusion T2I MultiGPU",
             "type": "python",
             "request": "launch",
-            "program": "multi_gpu.py",
+            "program": "multigpu/fill_imagenet.py",
             "env": {"CUDA_VISIBLE_DEVICES":"0, 1",},
             "args": [
-            "--prompt", "magpie",
+            "--prompt", "a realistic image of electric ray'",
             "--plms",
-            "--n_samples", "6",
+            "--n_samples", "4",
             "--n_iter", "2", 
             "--seed", "1234",
             "--DDP",
@@ -23,35 +40,16 @@
             "justMyCode": true
         },
         {
-            "name": "Stable-Diffusion T2I MultiGPU-single",
-            "type": "python",
-            "request": "launch",
-            "program": "multi_gpu.py",
-            "env": {"CUDA_VISIBLE_DEVICES":"0",},
-            "args": [
-            "--prompt", "magpie",
-            "--plms",
-            "--n_samples", "2",
-            "--n_iter", "2", 
-            "--seed", "1234",
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-
-
-        {
             "name": "Stable-Diffusion T2I Inference",
             "type": "python",
             "request": "launch",
             "program": "scripts/txt2img.py",
             "env": {"CUDA_VISIBLE_DEVICES":"0"},
-            "args": ["--prompt", "magpie",
+            "args": ["--prompt", "a photo of a magpie",
             "--plms",
             "--n_samples", "3",
-            "--n_iter", "2", 
+            "--n_iter", "3", 
             "--seed", "1234",
-            "--fixed_code",
             // "--from_file", "prompts.txt"
             // "--precision", "full"
             ],
