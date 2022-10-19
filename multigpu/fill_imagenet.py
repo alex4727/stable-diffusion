@@ -325,12 +325,12 @@ def run(rank, opt):
     if rank == 0: # save samples and grid
         save_image_grid(all_gpu_samples, opt, grid=True)
 
-def fill(rank, opt, imagenet_stats, total_images_to_generate):
+def fill(rank, opt):
     torch.cuda.set_device(rank)
-
-    if opt.DDP:
-        dist.init_process_group(backend='nccl', init_method='env://', world_size=opt.gpus, rank=rank)
     
+    if opt.DDP:
+        dist.init_process_group(backend='nccl', init_method='env://', rank=rank, world_size=opt.gpus)
+
     config = OmegaConf.load(f"{opt.config}")
     model = load_model_from_config(config, f"{opt.ckpt}", verbose=(rank==0))
 
@@ -346,10 +346,10 @@ def fill(rank, opt, imagenet_stats, total_images_to_generate):
     if rank == 0:
         generated_images_counter = 0
 
-    for cls_idx, cls_dict in imagenet_stats.items():
+    for cls_idx, cls_dict in opt.imagenet_stats.items():
         if rank == 0:
             current_time = datetime.now().strftime('%Y_%b%d_%H-%M-%S')
-            print(f"{current_time} | Start Generating {cls_dict['name']} (id: {cls_idx}, num real: {cls_dict['num']}) | {generated_images_counter}/{total_images_to_generate} generated so far")
+            print(f"{current_time} | Start Generating {cls_dict['name']} (id: {cls_idx}, num real: {cls_dict['num']}) | {generated_images_counter}/{opt.total_images_to_generate} generated so far", flush=True)
         num_generate = opt.target_images - cls_dict['num']
         n_iter = num_generate // opt.n_samples if num_generate % opt.n_samples == 0 else num_generate // opt.n_samples + 1
         n_drop = n_iter * opt.n_samples - num_generate 
@@ -403,10 +403,10 @@ def fill(rank, opt, imagenet_stats, total_images_to_generate):
 def main():
     opt = get_args()
     if opt.fill_imagenet:
-        imagenet_stats, real_images = prepare_imagenet_stats(opt)
-        total_images_to_generate = opt.target_images*len(imagenet_stats)-real_images
+        opt.imagenet_stats, real_images = prepare_imagenet_stats(opt)
+        opt.total_images_to_generate = opt.target_images*len(opt.imagenet_stats)-real_images
         print(f"Total Real images: {real_images}")
-        print(f"Total Images to Generate: {total_images_to_generate}")
+        print(f"Total Images to Generate: {opt.total_images_to_generate}")
         print("Few options like n_iter, prompt will be automatically set to generate images for ImageNet")
     if opt.n_samples % opt.gpus != 0:
         raise ValueError("n_samples must be divisible by gpus")
@@ -415,14 +415,14 @@ def main():
             os.environ['MASTER_ADDR'] = 'localhost'
             os.environ['MASTER_PORT'] = str(random.randint(10000, 20000))
             if opt.fill_imagenet:
-                mp.spawn(fill, nprocs=opt.gpus, args=(opt, imagenet_stats, total_images_to_generate))
+                mp.spawn(fill, nprocs=opt.gpus, args=(opt,))
             else:
                 mp.spawn(run, nprocs=opt.gpus, args=(opt,))
         except KeyboardInterrupt:
             dist.destroy_process_group()
     else:
         if opt.fill_imagenet:
-            fill(0, opt, imagenet_stats)
+            fill(0, opt)
         else:
             run(0, opt)
 
