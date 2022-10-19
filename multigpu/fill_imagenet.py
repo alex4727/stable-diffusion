@@ -227,7 +227,7 @@ def save_imagenet(all_gpu_samples, cls_idx, output_path):
 
 def save_imagenet_chunk(all_gpu_samples, cls_idx, output_path):
     all_gpu_samples = 255. * rearrange(all_gpu_samples.cpu().numpy(), 'b c h w -> b h w c')
-    np.save(os.path.join(output_path, f"fake_{cls_idx}.npy"), all_gpu_samples)
+    np.save(os.path.join(output_path, f"fake_{cls_idx}.npy"), all_gpu_samples.astype(np.uint8))
 
 def prepare_imagenet_stats(opt):
     print("Preparing imagenet stats")
