@@ -12,7 +12,7 @@
             "env": {"CUDA_VISIBLE_DEVICES":"0, 1",},
             "args": [
             "--plms",
-            "--n_samples", "2",
+            "--n_samples", "4",
             "--fill_imagenet",
             "--imagenet_path", "/root/data2/data/ImageNet",
             "--imagenet_out_path", "/root/data/data/ImageNet-LT",
@@ -29,15 +29,17 @@
             "type": "python",
             "request": "launch",
             "program": "multigpu/txt2img.py",
-            "env": {"CUDA_VISIBLE_DEVICES":"0",},
+            "env": {"CUDA_VISIBLE_DEVICES":"0, 1",},
             "args": [
-            "--prompt", "a realistic image of electric ray'",
+            "--prompt", "a photo of a magpie'",
             "--plms",
-            "--n_samples", "4",
+            "--n_samples", "2",
             "--n_iter", "2", 
             "--seed", "1234",
             "--DDP",
-            "--gpus", "1",
+            "--gpus", "2",
+            "--H", "256",
+            "--W", "256"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -50,9 +52,12 @@
             "env": {"CUDA_VISIBLE_DEVICES":"0"},
             "args": ["--prompt", "a photo of a magpie",
             "--plms",
-            "--n_samples", "3",
-            "--n_iter", "3", 
-            "--seed", "1234",
+            "--n_samples", "1",
+            "--n_iter", "1", 
+            "--seed", "67567",
+            "--H", "256",
+            "--W", "256",
+            "--C", "4"
             // "--from_file", "prompts.txt"
             // "--precision", "full"
             ],

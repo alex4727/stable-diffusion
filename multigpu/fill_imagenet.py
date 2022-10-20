@@ -152,6 +152,18 @@ def get_args():
         help='whether to move real images to fake images (required only once)'
     )
     parser.add_argument(
+        "--start_idx",
+        type=int,
+        default=0,
+        help="start index for imagenet (inclusive)"
+    )
+    parser.add_argument(
+        "--end_idx",
+        type=int,
+        default=999,
+        help="end index for imagenet (inclusive)"
+    )
+    parser.add_argument(
         "--DDP",
         action='store_true',
         help="use DDP"
@@ -222,7 +234,8 @@ def save_imagenet(all_gpu_samples, cls_idx, output_path):
     for sample in all_gpu_samples:
         sample = 255. * rearrange(sample.cpu().numpy(), 'c h w -> h w c')
         img = Image.fromarray(sample.astype(np.uint8))
-        img.save(os.path.join(output_path, f"fake_{cls_idx}_{count:04}.png"))
+        # img.save(os.path.join(output_path, f"fake_{cls_idx}_{count:04}.png"))
+        img.save(os.path.join(output_path, f"fake_{cls_idx}_{count:04}.JPEG"))
         count += 1
 
 def save_imagenet_chunk(all_gpu_samples, cls_idx, output_path):
@@ -351,6 +364,10 @@ def fill(rank, opt):
         generated_images_counter = 0
 
     for cls_idx, cls_dict in opt.imagenet_stats.items():
+        if int(cls_idx) < int(opt.start_idx):
+            continue
+        if int(cls_idx) > int(opt.end_idx):
+            break
         if rank == 0:
             current_time = datetime.now().strftime('%Y_%b%d_%H-%M-%S')
             print(f"{current_time} | Start Generating {cls_dict['name']} (id: {cls_idx}, num real: {cls_dict['num']}) | {generated_images_counter}/{opt.total_images_to_generate} generated so far", flush=True)
@@ -411,6 +428,7 @@ def main():
         opt.total_images_to_generate = opt.target_images*len(opt.imagenet_stats)-real_images
         print(f"Total Real images: {real_images}")
         print(f"Total Images to Generate: {opt.total_images_to_generate}")
+        print(f"Generating from index {opt.start_idx} to {opt.end_idx}")
         print("Few options like n_iter, prompt will be automatically set to generate images for ImageNet")
     if opt.n_samples % opt.gpus != 0:
         raise ValueError("n_samples must be divisible by gpus")
