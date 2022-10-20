@@ -74,14 +74,15 @@ def main():
             fake_images = [i for i in os.listdir(imagenet_stats[cls_idx]["folder"]) if "fake" in i]
             if status[cls_idx] == "not_done" and os.path.exists(npy_name):
                 # if npy file exists and no jpegs
-                print(f"Found {npy_name}... turning into images")
+                print(f"Found {npy_name}... turning into images", flush=True)
+                time.sleep(60)
                 save_jpeg(npy_name, imagenet_stats, cls_idx)
                 status[cls_idx] = "done"
                 update_status_file(status, opt.status_file)
                 os.remove(npy_name)
             elif status[cls_idx] == "not_done" and len(fake_images) == imagenet_stats[cls_idx]["num"]:
                 # already converted to jpegs (possible in continued case)
-                print(f"Found images for {cls_idx}... marking as done")
+                print(f"Found images for {cls_idx}... marking as done", flush=True)
                 if os.path.exists(npy_name):
                     os.remove(npy_name)
                 status[cls_idx] = "done"
