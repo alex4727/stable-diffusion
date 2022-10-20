@@ -367,6 +367,8 @@ def fill(rank, opt):
         if int(cls_idx) < int(opt.start_idx):
             continue
         if int(cls_idx) > int(opt.end_idx):
+            if opt.DDP:
+                dist.barrier()
             break
         if rank == 0:
             current_time = datetime.now().strftime('%Y_%b%d_%H-%M-%S')
@@ -419,7 +421,8 @@ def fill(rank, opt):
             generated_images_counter += all_gpu_samples.shape[0]
             save_imagenet_chunk(all_gpu_samples, cls_idx, os.path.join(f"{opt.imagenet_out_path}", "train", f"{cls_dict['id']}"))
         
-        dist.barrier()
+        if opt.DDP:
+            dist.barrier()
 
 def main():
     opt = get_args()
