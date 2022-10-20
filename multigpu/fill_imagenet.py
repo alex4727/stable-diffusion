@@ -415,7 +415,7 @@ def fill(rank, opt):
             all_gpu_samples =[per_gpu_samples]
         if rank == 0: 
             all_gpu_samples = torch.cat(all_gpu_samples, dim=0)
-            all_gpu_samples = all_gpu_samples[:-n_drop]
+            all_gpu_samples = all_gpu_samples[:-n_drop] if n_drop > 0 else all_gpu_samples
             generated_images_counter += all_gpu_samples.shape[0]
             save_imagenet_chunk(all_gpu_samples, cls_idx, os.path.join(f"{opt.imagenet_out_path}", "train", f"{cls_dict['id']}"))
         
