@@ -40,11 +40,12 @@ def prepare_imagenet_stats(opt):
 def save_jpeg(npy_name, imagenet_stats, cls_idx):
     count = 0
     samples = np.load(npy_name)
-    if samples.shape[0] != imagenet_stats[cls_idx]["num"]:
+    if samples.shape[0] != 1300 - imagenet_stats[cls_idx]["num"]:
         print(f"Possible Error: {cls_idx} npz has {samples.shape[0]} samples, but should have {imagenet_stats[cls_idx]['num']}")
     for sample in samples:
         img = Image.fromarray(sample)
         img.save(os.path.join(imagenet_stats[cls_idx]["folder"], f"fake_{cls_idx}_{count:04}.JPEG"))
+        count += 1
 
 def update_status_file(status, status_file):
     with open(status_file, "w") as f:
