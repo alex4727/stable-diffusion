@@ -147,6 +147,11 @@ def get_args():
         help="number of target images per class"
     )
     parser.add_argument(
+        "--force_target",
+        action='store_true',
+        help="whether to force target images"
+    )
+    parser.add_argument(
         "--move_real_images",
         action='store_true',
         help='whether to move real images to fake images (required only once)'
@@ -373,7 +378,7 @@ def fill(rank, opt):
         if rank == 0:
             current_time = datetime.now().strftime('%Y_%b%d_%H-%M-%S')
             print(f"{current_time} | Start Generating {cls_dict['name']} (id: {cls_idx}, num real: {cls_dict['num']}) | {generated_images_counter}/{opt.total_images_to_generate} generated so far", flush=True)
-        num_generate = opt.target_images - cls_dict['num']
+        num_generate = opt.target_images - cls_dict['num'] if not opt.force_target else opt.target_images
         n_iter = num_generate // opt.n_samples if num_generate % opt.n_samples == 0 else num_generate // opt.n_samples + 1
         n_drop = n_iter * opt.n_samples - num_generate 
         prompt = cls_dict['prompt']
@@ -428,7 +433,7 @@ def main():
     opt = get_args()
     if opt.fill_imagenet:
         opt.imagenet_stats, real_images = prepare_imagenet_stats(opt)
-        opt.total_images_to_generate = opt.target_images*len(opt.imagenet_stats)-real_images
+        opt.total_images_to_generate = opt.target_images*len(opt.imagenet_stats)-real_images if not opt.force_target else opt.target_images*len(opt.imagenet_stats)
         print(f"Total Real images: {real_images}")
         print(f"Total Images to Generate: {opt.total_images_to_generate}")
         print(f"Generating from index {opt.start_idx} to {opt.end_idx}")

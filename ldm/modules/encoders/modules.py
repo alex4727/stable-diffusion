@@ -3,7 +3,7 @@ import torch.nn as nn
 from functools import partial
 import clip
 from einops import rearrange, repeat
-from transformers import CLIPTokenizer, CLIPTextModel, logging
+from transformers import CLIPTokenizer, CLIPTextModel, CLIPFeatureExtractor, CLIPVisionModel, CLIPProcessor, logging
 import kornia
 
 from ldm.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
@@ -140,6 +140,9 @@ class FrozenCLIPEmbedder(AbstractEncoder):
         super().__init__()
         self.tokenizer = CLIPTokenizer.from_pretrained(version)
         self.transformer = CLIPTextModel.from_pretrained(version)
+        # self.extractor = CLIPFeatureExtractor.from_pretrained(version)
+        # self.vision_transformer = CLIPVisionModel.from_pretrained(version)
+        # self.processor = CLIPProcessor.from_pretrained(version)
         self.device = device
         self.max_length = max_length
         self.freeze()
