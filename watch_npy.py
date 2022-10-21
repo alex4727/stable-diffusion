@@ -22,14 +22,14 @@ def prepare_imagenet_stats(opt):
     with open("ImageNet-LT/ImageNet_LT_train.txt", "r") as f:
         lines = f.read().splitlines()
         subset_image_list, subset_label_list = zip(*[i.split(" ") for i in lines])
-        count = 0
         prev_label = 0
         for img, label in zip(subset_image_list, subset_label_list):
             imagenet_stats[label]['num'] += 1
             if prev_label != label:
-                count = 0
                 prev_label = label
-            count += 1
+        if opt.force_target:
+            for cls_idx in imagenet_stats.keys():
+                imagenet_stats[cls_idx]['num'] = 0
 
     status = dict()
     for cls_idx, cls_dict in imagenet_stats.items():
@@ -55,6 +55,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--watch_dir", type=str, required=True)
     parser.add_argument("--status_file", type=str, default="None", required=False)
+    parser.add_argument("--force_target", action='store_true')
     opt = parser.parse_args()
     imagenet_stats, status = prepare_imagenet_stats(opt)
     
